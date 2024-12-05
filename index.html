@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List</title>
+
+</head>
+<body>
+  <style>/* General Reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+      }
+      
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #e8e5ea, #ffffff);
+      }
+      
+      /* Box Styling */
+      .box {
+        position: relative;
+        width: 450px;
+        height: 600px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #ffffff,#b969f2);
+        /* 3D Box Shadow */
+    box-shadow: 10px 10px 15px rgba(16, 1, 1, 0.952), 
+    -5px -5px 20px rgba(16, 1, 1, 0.952), 
+    5px 5px 30px rgba(16, 1, 1, 0.952);
+    
+        padding: 20px;
+      }
+      
+      h2 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #01080b; /* Dark Grayish Blue */
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      
+      /* Input Box Styling */
+      #inputbox {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 25px;
+        box-shadow: inset 5px 5px 8px rgba(0, 0, 0, 0.486), inset -3px -3px 8px rgba(7, 0, 0, 0.7);
+        outline: none;
+        margin-bottom: 20px;
+      }
+      
+      /* Task List Styling */
+      #list {
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 0;
+        list-style: none;
+      }
+      
+      #list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #a257e94e;
+        color: #00070b; /* Dark Grayish Blue */
+        padding: 12px 20px;
+        margin: 10px 10px;
+        border-radius: 15px;
+        box-shadow: 2px 2px 5px rgba(6, 0, 0, 0.407), -2px -2px 5px rgba(11, 1, 1, 0.7);
+      }
+      
+      #list li:hover {
+        background: #b339e39e;
+        cursor: pointer;
+      }
+      
+      #list li.done {
+        background: #f37f779e; /* Light Green */
+        text-decoration: line-through;
+        color: #2e7d32; /* Dark Green */
+      }
+      
+      #list li .task-text {
+        flex-grow: 1;
+        padding-right: 10px;
+      }
+      
+      /* Icons Styling */
+      #list li .icons {
+        display: flex;
+        gap: 10px;
+      }
+      
+      #list li .mark-done-icon,
+      #list li .delete-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+        cursor: pointer;
+        border-radius: 50%;
+        color: white;
+      }
+      
+      #list li .mark-done-icon {
+        background: #4caf50; /* Green */
+      }
+      
+      #list li .mark-done-icon:hover {
+        background: #044707; /* Darker Green */
+      }
+      
+      #list li .delete-icon {
+        background: #f44336; /* Red */
+      }
+      
+      #list li .delete-icon:hover {
+        background: #540606; /* Darker Red */
+      }
+      
+      /* Score Styling */
+      #score {
+        text-align: center;
+        margin-top: 15px;
+        padding: 10px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #00090e;
+        background: #e8f5e9; /* Light Greenish White */
+        border-radius: 20px;
+        box-shadow: inset 5px 5px 8px rgba(0, 0, 0, 0.486), inset -3px -3px 8px rgba(7, 0, 0, 0.7);
+        outline: none;
+    }
+      </style>
+  <div class="container">
+    <div class="box">
+      <h2>To-Do List</h2>
+      <input type="text" placeholder="Add your task" id="inputbox">
+      <ul id="list"></ul>
+      <div id="score">Tasks Completed: 0</div> <!-- New score display -->
+    </div>
+  </div>
+  <script >let inputbox = document.querySelector('#inputbox');
+    let list = document.querySelector('#list');
+    let scoreDisplay = document.querySelector('#score'); // Reference to the score display
+    let completedTasks = 0; // Counter for completed tasks
+    
+    inputbox.addEventListener("keyup", function (event) {
+      if (event.key === "Enter") {
+        addItem(this.value);
+        this.value = ""; // Clear the input box
+      }
+    });
+    
+    let addItem = (inputValue) => {
+      if (inputValue.trim() === "") return; // Prevent adding empty tasks
+    
+      let listItem = document.createElement("li");
+      listItem.innerHTML = `
+        <span class="task-text">${inputValue}</span>
+        <div class="icons">
+          <i class="mark-done-icon">&#10003;</i>
+          <i class="delete-icon"></i>
+        </div>
+      `;
+    
+      // Mark as done on tick mark click
+      listItem.querySelector(".mark-done-icon").addEventListener("click", function () {
+        listItem.classList.toggle('done');
+    
+        // Update the score based on task completion status
+        if (listItem.classList.contains('done')) {
+          completedTasks++;
+        } else {
+          completedTasks--;
+        }
+        updateScore();
+      });
+    
+      // Remove item on delete icon click
+      listItem.querySelector(".delete-icon").addEventListener("click", function () {
+        // Adjust the score if the deleted task was marked as done
+        if (listItem.classList.contains('done')) {
+          completedTasks--;
+          updateScore();
+        }
+        listItem.remove();
+      });
+    
+      list.appendChild(listItem);
+    };
+    
+    // Update the score display
+    let updateScore = () => {
+      scoreDisplay.textContent = `Tasks Completed: ${completedTasks}`;
+    };
+    </script>
+</body>
+</html>
